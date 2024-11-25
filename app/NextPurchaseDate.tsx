@@ -5,26 +5,28 @@ import DateInput from "../components/DateInput";
 import { useRouter } from "expo-router";
 import { useUser } from "../context/UserContext";
 
-const NewUserScreen: React.FC = () => {
+const NextPurchaseDateScreen: React.FC = () => {
   const router = useRouter();
-  const { userId, setSelectedDate } = useUser(); // Access setSelectedDate from context
-  const [localDate, setLocalDate] = useState<Date | null>(null);
+  const { userId, selectedDate, setNextPurchaseDate } = useUser(); // Access `setNextPurchaseDate` from context
+  const [localNextDate, setLocalNextDate] = useState<Date | null>(null); // Local state for date selection
 
   const handleNextPress = () => {
-    if (!localDate) {
+    if (!localNextDate) {
       Alert.alert("Error", "Please select a date before proceeding.");
       return;
     }
-    setSelectedDate(localDate); // Save date to the global context
-    Alert.alert("Date Selected", `You last went shopping on ${localDate.toDateString()}`);
-    router.push("/select-items"); // Navigate to the next screen
+    setNextPurchaseDate(localNextDate); // Save the next purchase date to the global context
+    Alert.alert("Next Past Date ", ` ${selectedDate}`);
+    Alert.alert("Next Past Date ", ` ${selectedDate}`);
+    Alert.alert("Next Purchase Date Saved", `Your next purchase is planned for ${localNextDate.toDateString()}`);
+    router.push("/home"); // Navigate to the home screen
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{userId ? `Your User ID: ${userId}` : "No User ID Found"}</Text>
-      <Text style={styles.title}>When did you last go shopping?</Text>
-      <DateInput value={localDate} onChange={setLocalDate} />
+      <Text style={styles.title}>When is your next purchase planned?</Text>
+      <DateInput value={localNextDate} onChange={setLocalNextDate} />
       <Button title="Next" onPress={handleNextPress} />
     </View>
   );
@@ -47,4 +49,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NewUserScreen;
+export default NextPurchaseDateScreen;

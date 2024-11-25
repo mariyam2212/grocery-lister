@@ -3,11 +3,13 @@ import { StyleSheet, View, Alert, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import InputField from "../components/InputField";
 import Button from "../components/Button";
-import { auth } from "../firebase";
+import { auth } from "../firebase/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { useUser } from "../context/UserContext";
 
 export default function LoginScreen() {
   const router = useRouter(); // For navigation
+  const { setUserId } = useUser(); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -19,6 +21,8 @@ export default function LoginScreen() {
       }
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      const userId = userCredential.user.uid; // Retrieve user ID from Firebase
+      setUserId(userId); 
 
       // Check if the user is new or returning
       const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;

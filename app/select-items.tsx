@@ -1,34 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, FlatList, Alert } from "react-native";
 import SelectableItem from "../components/SelectableItem";
 import SearchBar from "../components/SearchBar";
 import Button from "../components/Button";
 import { useRouter } from "expo-router";
-
-const initialItemsList = [
-  "Apples",
-  "Cream",
-  "Bananas",
-  "Strawberries",
-  "Bread",
-  "Oranges",
-  "Butter",
-  "Water",
-  "Eggs",
-  "Oil",
-  "Almonds",
-  "Cheese",
-  "Cilantro",
-  "Cherries",
-  "Potatoes",
-  "Tomatoes",
-  "Onions",
-];
+import { database } from "../firebase/firebase";
+import { ref, onValue } from "firebase/database";
+import { useUser } from "../context/UserContext";
 
 const SelectItemsScreen: React.FC = () => {
   const router = useRouter();
-  const [itemsList, setItemsList] = useState(initialItemsList);
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [itemsList, setItemsList] = useState<string[]>([]); // Holds the items fetched from Firebase
+  const { selectedItems, setSelectedItems } = useUser();
+
+  useEffect(() => {
+    const itemsRef = ref(database, "items"); // Reference to the "items" table
+    const unsubscribe = onValue(itemsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const fetchedItems = Object.values(data).map((item: any) => item.name); // Extract names of items
+        setItemsList(fetchedItems);
+      }
+    });
+
+    // Cleanup the listener on unmount
+    return () => unsubscribe();
+  }, []);
 
   const toggleItemSelection = (item: string) => {
     if (selectedItems.includes(item)) {
@@ -53,7 +50,7 @@ const SelectItemsScreen: React.FC = () => {
       return;
     }
     Alert.alert("Selected Items", `You have selected: ${selectedItems.join(", ")}`);
-    router.push("./home"); // Navigate to the grocery list page
+    router.push("./NextPurchaseDate"); 
   };
 
   return (
