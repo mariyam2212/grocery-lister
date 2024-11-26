@@ -3,21 +3,23 @@ import { StyleSheet, View, Text } from "react-native";
 import Button from "../components/Button";
 import { useRouter } from "expo-router";
 import { useUser } from "../context/UserContext";
+import { useLocalSearchParams } from "expo-router";
 
 export default function ShoppingCompletionScreen() {
     const router = useRouter();
-    const { generatedList } = useUser();
-  
-    const itemsBought = generatedList.filter((item) => item.status === "N").length;
-    
+    const { completedItems } = useLocalSearchParams();
+
     const handleHomePress = () => {
-      router.push("./home"); // Navigate to the home screen
+        router.push({
+            pathname: "./home",
+            params: { newList: "Y" },
+          });
     };
   
     return (
       <View style={styles.container}>
         <Text style={styles.title}>You're finished shopping!</Text>
-        <Text style={styles.subTitle}>{itemsBought} Items Bought</Text>
+        <Text style={styles.subTitle}>{completedItems} Items Bought</Text>
         <Button title="Home" onPress={handleHomePress} />
       </View>
     );

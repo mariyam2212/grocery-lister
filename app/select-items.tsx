@@ -5,13 +5,16 @@ import SearchBar from "../components/SearchBar";
 import Button from "../components/Button";
 import { useRouter } from "expo-router";
 import { database } from "../firebase/firebase";
-import { ref, onValue } from "firebase/database"; 
+import { ref, onValue, set } from "firebase/database"; 
 import { useUser } from "../context/UserContext";
+import { useLocalSearchParams } from "expo-router";
 
 const SelectItemsScreen: React.FC = () => {
   const router = useRouter();
   const [itemsList, setItemsList] = useState<string[]>([]); // Holds the items fetched from Firebase
-  const { selectedItems, setSelectedItems } = useUser(); // Access context variables
+  const { userId, selectedItems, pastPurchaseDate, setSelectedItems } = useUser(); 
+  const { editFlag } = useLocalSearchParams();
+  const isEdit = editFlag === "true"; 
 
   useEffect(() => {
     // Fetch items from Firebase "items" table
@@ -52,11 +55,49 @@ const SelectItemsScreen: React.FC = () => {
     }
 
     try {
-      // Notify user and navigate to the next screen
-      Alert.alert("Success", "Your selections have been saved.");
-      router.push("./NextPurchaseDate");
+      if (!isEdit) {
+        updateGroceryItems();
+        router.push({
+          pathname: "./home",
+          params: { newList: "Y" },
+        });
+      } else {
+        const newItemsAddedToGeneratedList = selectedItems;
+        router.push({
+          pathname: "./GeneratedList",
+          params: { newItemsAddedToGeneratedList },
+        });
+      }
     } catch (error) {
       Alert.alert("Error", "An error occurred while saving your selections. Please try again.");
+    }
+  };
+
+  const updateGroceryItems = async () => {
+    try {
+      const groceryItemsRef = ref(database, `GroceryItems/${userId}`);
+  
+      // Define the type for each grocery item entry
+      type GroceryItem = {
+        frequency: number;
+        lastPurchaseDate: string;
+      };
+  
+      // Use reduce with an explicitly typed accumulator
+      const updates = selectedItems.reduce<Record<string, GroceryItem>>((acc, item) => {
+        acc[item] = {
+          frequency: (acc[item]?.frequency || 0) + 1, // Increment frequency
+          lastPurchaseDate: pastPurchaseDate || new Date().toDateString(), // Use pastPurchaseDate or current date
+        };
+        return acc;
+      }, {}); // Initialize the accumulator as an empty object of type Record<string, GroceryItem>
+  
+      // Update the `GroceryItems` table
+      await set(groceryItemsRef, updates);
+      console.log("Grocery items updated successfully.");
+    } catch (error) {
+      console.error("Error updating GroceryItems:", error);
+      throw error;
     }
   };
 

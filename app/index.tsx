@@ -30,7 +30,9 @@ export default function LoginScreen() {
       if (isNewUser) {
         router.push("./purchase-date-nu"); 
       } else {
-        router.push("./home"); 
+        router.push({
+          pathname: "./home"
+        });
       }
       router.push("./home"); // Navigate to the Grocery List page after successful login
     } catch (error: any) {

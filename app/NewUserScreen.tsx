@@ -15,9 +15,8 @@ const NewUserScreen: React.FC = () => {
       Alert.alert("Error", "Please select a date before proceeding.");
       return;
     }
-    setPastPurchaseDate(localDate.toDateString()); // Save date to the global context
-    Alert.alert("Date Selected", `You last went shopping on ${localDate.toDateString()}`);
-    router.push("/select-items"); // Navigate to the next screen
+    setPastPurchaseDate(localDate.toDateString()); 
+    router.push("/select-items");
   };
 
   return (

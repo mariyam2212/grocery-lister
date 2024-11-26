@@ -5,8 +5,11 @@ import ListItem from "../components/ListItem";
 import { useUser } from "../context/UserContext";
 import { useRouter } from "expo-router";
 import { database } from "../firebase/firebase";
-import { ref, get, query, orderByKey, limitToLast, set } from "firebase/database";
+import { ref, get, query, orderByKey, limitToLast, set, update } from "firebase/database";
 import { useLocalSearchParams } from "expo-router";
+import { GeneratedListHelper } from "../firebase/GLHelper";
+import fetchLatestActiveGeneratedList from "../firebase/GeneratedListFetch";
+import { updateGroceryItems } from "../firebase/GroceryItemsUpdate"
 
 type ListData = {
   item: string;
@@ -17,47 +20,25 @@ export default function GeneratedListScreen() {
   const { userId, generatedList, setGeneratedList } = useUser();
   const [items, setItems] = useState<ListData[]>([]); 
   const [loading, setLoading] = useState(true); 
-  const { newList } = useLocalSearchParams();
+  const { newList, newItemsAddedToGeneratedList } = useLocalSearchParams();
+  const [showCheckBox, setShowCheckBox] = useState<boolean>(newList === "Y" ? false : true);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchGeneratedList = async () => {
-      if (!userId) {
-        Alert.alert("Error", "User ID not found.");
-        return;
-      }
-
-      // If list exists in context, use it
-      if (generatedList && generatedList) {
-        setItems(generatedList);
-        setLoading(false);
-        return;
-      }
-
-      // Otherwise, fetch from Firebase
-      try {
-        const generatedListsRef = ref(database, `GeneratedLists/${userId}`);
-        const latestQuery = query(generatedListsRef, orderByKey(), limitToLast(1));
-        const snapshot = await get(latestQuery);
-
-        if (snapshot.exists()) {
-          const data = Object.values(snapshot.val())[0] as {
-            items: ListData[];
-          };
-          setItems(data.items || []);
-        } else {
-          Alert.alert("No Generated List Found", "Please generate a list first.");
-        }
-      } catch (error) {
-        console.error("Error fetching GeneratedList:", error);
-        Alert.alert("Error", "An error occurred while fetching the generated list.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchGeneratedList();
   }, [userId, generatedList]);
+
+  const fetchGeneratedList = async () => {
+    if (!userId) {
+      Alert.alert("Error", "User ID not found.");
+      return;
+    }
+    const latestActiveList = await fetchLatestActiveGeneratedList(userId);
+    if (latestActiveList) {
+      setItems(latestActiveList.data.items);
+      setLoading(false);
+    } 
+  };
 
   const toggleItemStatus = (item: string) => {
     setItems((prevItems) =>
@@ -68,19 +49,54 @@ export default function GeneratedListScreen() {
   };
 
   const handleAddItemsPress = () => {
-    router.push("./select-items");
+    router.push({
+      pathname: "../select-items",
+      params: { editFlag : "true" },
+    });
   };
 
   const handleEditList = () => {
-    Alert.alert("Edit List", "Feature under construction!");
+    setShowCheckBox(false)
   };
 
-  const handleFinishShopping = () => {
-    const completedItems = items.filter((item) => item.status === "Y").length;
-    router.push({
-      pathname: "./FinishedShopping",
-      params: { completedItems },
-    });
+  const handleFinishShopping = async () => {
+    if (!userId) {
+      Alert.alert("Error", "User ID not found.");
+      return;
+    }
+    try {
+      await markListAsInactive();
+      const completedItems = items.filter((item) => item.status === "Y").map((item) => item.item);
+      updateGroceryItems(userId, completedItems);
+      router.push({
+        pathname: "./FinishedShopping",
+        params: { completedItems: completedItems.length },
+      });
+    } catch (error) {
+      console.error("Error finishing shopping:", error);
+      Alert.alert("Error", "An error occurred while finishing shopping.");
+    }
+  };
+
+  const markListAsInactive = async () => {
+    if (!userId) {
+      return;
+    }
+    try {
+      const latestList = await GeneratedListHelper(userId, "fetchLatest");
+      if (latestList) {
+        const { latestKey } = latestList;
+        const listRef = ref(database, `GeneratedLists/${userId}/${latestKey}`);
+        const fieldsToUpdate = {
+          status: "inactive",
+          new_list: "N",
+          finalized_on: new Date().toDateString(),
+        };
+        await update(listRef, fieldsToUpdate);
+      } 
+    } catch (error) {
+      console.error("Error fetching latest list:", error);
+    }
   };
 
   const handleDoneReviewingPress = async () => {
@@ -88,22 +104,46 @@ export default function GeneratedListScreen() {
       Alert.alert("Error", "User ID not found.");
       return;
     }
-
+  
     try {
       const generatedListsRef = ref(database, `GeneratedLists/${userId}`);
       const latestQuery = query(generatedListsRef, orderByKey(), limitToLast(1));
       const snapshot = await get(latestQuery);
+      const newItemsAddedToGeneratedListCasted = Array.isArray(newItemsAddedToGeneratedList)
+      ? newItemsAddedToGeneratedList
+      : [];
 
       if (snapshot.exists()) {
-        const [latestKey] = Object.entries(snapshot.val())[0];
-        await set(ref(database, `GeneratedLists/${userId}/${latestKey}/items`), items);
-        Alert.alert("Success", "List updated successfully!");
+        const [latestKey, latestData] = Object.entries(snapshot.val())[0]; 
+        const updatedItems: ListData[] = [
+          ...items.map((item) => ({ ...item })), 
+          ...newItemsAddedToGeneratedListCasted
+            .filter(
+              (newItem: string) =>
+                !items.some((existingItem) => existingItem.item === newItem) 
+            )
+            .map((newItem: string) => ({ item: newItem, status: "Y" })), 
+        ];
+  
+        // Update the database with the updated items
+        await set(ref(database, `GeneratedLists/${userId}/${latestKey}/items`), updatedItems);
+  
+        // Update the context as well
+        setGeneratedList(updatedItems);
+  
+        router.push({
+          pathname: "./home",
+          params: { newList: "N" },
+        });
+      } else {
+        Alert.alert("Error", "No generated list found in the database.");
       }
     } catch (error) {
       console.error("Error saving list:", error);
       Alert.alert("Error", "An error occurred while saving the list.");
     }
   };
+  
 
   if (loading) {
     return (
@@ -116,32 +156,32 @@ export default function GeneratedListScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
-        {newList === "Y" ? "Review your list!" : "Check off items as you shop!"}
+        {!showCheckBox ? "Review your list!" : "Check off items as you shop!"}
       </Text>
       <FlatList
         data={items}
         keyExtractor={(item) => item.item}
         renderItem={({ item, index }) => (
           <ListItem
-            index={index + 1} // Show the item number
-            item={item.item} // Name of the item
-            showCheckBox={newList === "N"} // Show checkbox for shopping phase
-            isChecked={item.status === "Y"} // Checkbox is checked if status is "Y"
-            onCheckBoxToggle={() => toggleItemStatus(item.item)} // Handle checkbox toggle
+            index={index + 1} 
+            item={item.item} 
+            showCheckBox={showCheckBox}
+            isChecked={item.status === "Y"} 
+            onCheckBoxToggle={() => toggleItemStatus(item.item)}
             onDeletePress={() => {
               setItems((prevItems) => prevItems.filter((i) => i.item !== item.item));
-            }} // Handle item deletion
+            }} 
           />
         )}
         contentContainerStyle={styles.listContainer}
       />
       <Button
-        title={newList === "Y" ? "Add Items" : "Edit List"}
-        onPress={newList === "Y" ? handleAddItemsPress : handleEditList}
+        title={!showCheckBox ? "Add Items" : "Edit List"}
+        onPress={!showCheckBox ? handleAddItemsPress : handleEditList}
       />
       <Button
-        title={newList === "Y" ? "Done Reviewing" : "Finish Shopping"}
-        onPress={newList === "Y" ? handleDoneReviewingPress : handleFinishShopping}
+        title={!showCheckBox ? "Done Reviewing" : "Finish Shopping"}
+        onPress={!showCheckBox ? handleDoneReviewingPress : handleFinishShopping}
       />
     </View>
   );
