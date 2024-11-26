@@ -28,8 +28,9 @@ const DateInput: React.FC<DateInputProps> = ({ placeholder = "Select Date", valu
         <DateTimePicker
           value={value || new Date()}
           mode="date"
-          display={Platform.OS === "ios" ? "spinner" : "default"}
+          display={Platform.OS === "ios" ? "spinner" : "calendar"}
           onChange={handleChange}
+          style={{ backgroundColor: "lightgray" }} // Ensure visibility
         />
       )}
     </View>
