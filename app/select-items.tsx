@@ -5,16 +5,17 @@ import SearchBar from "../components/SearchBar";
 import Button from "../components/Button";
 import { useRouter } from "expo-router";
 import { database } from "../firebase/firebase";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue } from "firebase/database"; 
 import { useUser } from "../context/UserContext";
 
 const SelectItemsScreen: React.FC = () => {
   const router = useRouter();
   const [itemsList, setItemsList] = useState<string[]>([]); // Holds the items fetched from Firebase
-  const { selectedItems, setSelectedItems } = useUser();
+  const { selectedItems, setSelectedItems } = useUser(); // Access context variables
 
   useEffect(() => {
-    const itemsRef = ref(database, "items"); // Reference to the "items" table
+    // Fetch items from Firebase "items" table
+    const itemsRef = ref(database, "items");
     const unsubscribe = onValue(itemsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -29,9 +30,9 @@ const SelectItemsScreen: React.FC = () => {
 
   const toggleItemSelection = (item: string) => {
     if (selectedItems.includes(item)) {
-      setSelectedItems(selectedItems.filter((i) => i !== item));
+      setSelectedItems(selectedItems.filter((i) => i !== item)); // Remove item from selection
     } else {
-      setSelectedItems([...selectedItems, item]);
+      setSelectedItems([...selectedItems, item]); // Add item to selection
     }
   };
 
@@ -44,13 +45,19 @@ const SelectItemsScreen: React.FC = () => {
     }
   };
 
-  const handleNextPress = () => {
+  const handleNextPress = async () => {
     if (selectedItems.length === 0) {
       Alert.alert("Error", "Please select at least one item before proceeding.");
       return;
     }
-    Alert.alert("Selected Items", `You have selected: ${selectedItems.join(", ")}`);
-    router.push("./NextPurchaseDate"); 
+
+    try {
+      // Notify user and navigate to the next screen
+      Alert.alert("Success", "Your selections have been saved.");
+      router.push("./NextPurchaseDate");
+    } catch (error) {
+      Alert.alert("Error", "An error occurred while saving your selections. Please try again.");
+    }
   };
 
   return (

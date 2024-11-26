@@ -1,53 +1,75 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import CheckBox from "./Checkbox";
 
-interface ListItemProps {
-  index: number;
-  label: string;
-  onRemove: () => void;
-}
+type ListItemProps = {
+  index?: number; // Optional numbered index
+  item: string; // Name of the item
+  showCheckBox?: boolean; // Whether to display a checkbox
+  isChecked?: boolean; // Checkbox state
+  onCheckBoxToggle?: () => void; // Callback when checkbox is toggled
+  onDeletePress: () => void; // Callback for delete button press
+};
 
-const ListItem: React.FC<ListItemProps> = ({ index, label, onRemove }) => {
+const ListItem: React.FC<ListItemProps> = ({
+  index,
+  item,
+  showCheckBox = false,
+  isChecked = false,
+  onCheckBoxToggle,
+  onDeletePress,
+}) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.index}>{index + 1}.</Text>
-      <Text style={styles.label}>{label}</Text>
-      <TouchableOpacity onPress={onRemove} style={styles.deleteButton}>
-        <Text style={styles.deleteText}>🗑️</Text>
-      </TouchableOpacity>
+    <View style={styles.listItemContainer}>
+      <Text style={styles.itemIndex}>{index ? `${index}.` : "•"}</Text>
+      <Text style={styles.itemText}>{item}</Text>
+      <View style={styles.itemContent}>
+        {showCheckBox ? (
+          <CheckBox isChecked={isChecked} onToggle={onCheckBoxToggle!} />
+        ) : (
+          <TouchableOpacity onPress={onDeletePress}>
+            <Text style={styles.deleteButton}>🗑</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  listItemContainer: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#F97316",
-    borderRadius: 8,
+    backgroundColor: "#F97316", // Orange background
     padding: 12,
-    marginBottom: 8,
-    shadowColor: "#000",
+    borderRadius: 8,
+    marginBottom: 12,
+    elevation: 2, // Shadow for Android
+    shadowColor: "#000", // Shadow for iOS
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 4,
   },
-  index: {
-    fontSize: 16,
-    color: "#FFFFFF",
+  itemContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  itemIndex: {
+    fontSize: 18,
+    color: "#FFFFFF", // White text
+    fontWeight: "bold",
     marginRight: 8,
   },
-  label: {
-    flex: 1,
-    fontSize: 16,
-    color: "#FFFFFF",
+  itemText: {
+    fontSize: 18,
+    color: "#FFFFFF", // White text
+    fontWeight: "500",
+    textAlign: "left",
   },
   deleteButton: {
-    padding: 8,
-  },
-  deleteText: {
-    fontSize: 18,
-    color: "#FFFFFF",
+    fontSize: 20,
+    color: "#FFFFFF", // White text
   },
 });
 

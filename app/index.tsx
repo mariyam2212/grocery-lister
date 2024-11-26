@@ -27,7 +27,6 @@ export default function LoginScreen() {
       // Check if the user is new or returning
       const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
 
-      Alert.alert("Login Success", "Welcome back!");
       if (isNewUser) {
         router.push("./purchase-date-nu"); 
       } else {

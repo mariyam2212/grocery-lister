@@ -7,7 +7,7 @@ import { useUser } from "../context/UserContext";
 
 const NewUserScreen: React.FC = () => {
   const router = useRouter();
-  const { userId, setSelectedDate } = useUser(); // Access setSelectedDate from context
+  const { userId, setPastPurchaseDate } = useUser(); // Access setSelectedDate from context
   const [localDate, setLocalDate] = useState<Date | null>(null);
 
   const handleNextPress = () => {
@@ -15,7 +15,7 @@ const NewUserScreen: React.FC = () => {
       Alert.alert("Error", "Please select a date before proceeding.");
       return;
     }
-    setSelectedDate(localDate); // Save date to the global context
+    setPastPurchaseDate(localDate.toDateString()); // Save date to the global context
     Alert.alert("Date Selected", `You last went shopping on ${localDate.toDateString()}`);
     router.push("/select-items"); // Navigate to the next screen
   };
