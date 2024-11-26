@@ -23,9 +23,27 @@ export default function GeneratedListScreen() {
   const { newList, newItemsAddedToGeneratedList } = useLocalSearchParams();
   const [showCheckBox, setShowCheckBox] = useState<boolean>(newList === "Y" ? false : true);
   const router = useRouter();
+  const newItemsAddedToGeneratedListCasted =
+  typeof newItemsAddedToGeneratedList === "string"
+    ? newItemsAddedToGeneratedList.split(",").map((item) => item.trim())
+    : [];
 
   useEffect(() => {
-    fetchGeneratedList();
+    if (newItemsAddedToGeneratedListCasted.length != 0) {
+      const mergedItems = [
+        ...generatedList,
+        ...newItemsAddedToGeneratedListCasted
+          .filter(
+            (newItem: string) => 
+              !generatedList.some((existingItem) => existingItem.item === newItem) // Ensure no duplicates
+          )
+          .map((newItem: string) => ({ item: newItem, status: "N" })), // Add status for new items
+      ];
+      setItems(mergedItems);   
+      setLoading(false);  
+    } else {
+      fetchGeneratedList();
+    }
   }, [userId, generatedList]);
 
   const fetchGeneratedList = async () => {
@@ -104,14 +122,10 @@ export default function GeneratedListScreen() {
       Alert.alert("Error", "User ID not found.");
       return;
     }
-  
     try {
       const generatedListsRef = ref(database, `GeneratedLists/${userId}`);
       const latestQuery = query(generatedListsRef, orderByKey(), limitToLast(1));
       const snapshot = await get(latestQuery);
-      const newItemsAddedToGeneratedListCasted = Array.isArray(newItemsAddedToGeneratedList)
-      ? newItemsAddedToGeneratedList
-      : [];
 
       if (snapshot.exists()) {
         const [latestKey, latestData] = Object.entries(snapshot.val())[0]; 
@@ -124,11 +138,9 @@ export default function GeneratedListScreen() {
             )
             .map((newItem: string) => ({ item: newItem, status: "Y" })), 
         ];
-  
-        // Update the database with the updated items
+        console.log("updatedItems: ", updatedItems);
         await set(ref(database, `GeneratedLists/${userId}/${latestKey}/items`), updatedItems);
   
-        // Update the context as well
         setGeneratedList(updatedItems);
   
         router.push({

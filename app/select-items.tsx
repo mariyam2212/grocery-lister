@@ -26,8 +26,9 @@ const SelectItemsScreen: React.FC = () => {
         setItemsList(fetchedItems);
       }
     });
-
-    // Cleanup the listener on unmount
+    if (isEdit) {
+      setSelectedItems([]);
+    }
     return () => unsubscribe();
   }, []);
 
@@ -62,7 +63,9 @@ const SelectItemsScreen: React.FC = () => {
           params: { newList: "Y" },
         });
       } else {
+        console.log("selectedItems: ", selectedItems);
         const newItemsAddedToGeneratedList = selectedItems;
+        console.log("newItemsAddedToGeneratedList: ", newItemsAddedToGeneratedList);
         router.push({
           pathname: "./GeneratedList",
           params: { newItemsAddedToGeneratedList },
@@ -126,6 +129,7 @@ const SelectItemsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    margin: 20,
     padding: 16,
     backgroundColor: "#FFFFFF",
   },
