@@ -1,14 +1,15 @@
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import CheckBox from "./Checkbox";
+import DeleteButton from "./DeleteButton";
 
 type ListItemProps = {
-  index?: number; // Optional numbered index
-  item: string; // Name of the item
-  showCheckBox?: boolean; // Whether to display a checkbox
-  isChecked?: boolean; // Checkbox state
-  onCheckBoxToggle?: () => void; // Callback when checkbox is toggled
-  onDeletePress: () => void; // Callback for delete button press
+  index?: number; 
+  item: string; 
+  showCheckBox?: boolean; 
+  isChecked?: boolean; 
+  onCheckBoxToggle?: () => void; 
+  onDeletePress: () => void; 
 };
 
 const ListItem: React.FC<ListItemProps> = ({
@@ -27,9 +28,7 @@ const ListItem: React.FC<ListItemProps> = ({
         {showCheckBox ? (
           <CheckBox isChecked={isChecked} onToggle={onCheckBoxToggle!} />
         ) : (
-          <TouchableOpacity onPress={onDeletePress}>
-            <Text style={styles.deleteButton}>🗑</Text>
-          </TouchableOpacity>
+          <DeleteButton onDeletePress={onDeletePress} />
         )}
       </View>
     </View>
@@ -38,38 +37,39 @@ const ListItem: React.FC<ListItemProps> = ({
 
 const styles = StyleSheet.create({
   listItemContainer: {
+    width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#F97316", // Orange background
+    backgroundColor: "#F97316", 
     padding: 12,
     borderRadius: 8,
     marginBottom: 12,
-    elevation: 2, // Shadow for Android
-    shadowColor: "#000", // Shadow for iOS
+    elevation: 2, 
+    shadowColor: "#000", 
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   itemContent: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   itemIndex: {
     fontSize: 18,
-    color: "#FFFFFF", // White text
+    color: "#FFFFFF", 
     fontWeight: "bold",
     marginRight: 8,
   },
   itemText: {
     fontSize: 18,
-    color: "#FFFFFF", // White text
+    color: "#FFFFFF", 
     fontWeight: "500",
     textAlign: "left",
   },
   deleteButton: {
     fontSize: 20,
-    color: "#FFFFFF", // White text
+    color: "#FFFFFF", 
   },
 });
 

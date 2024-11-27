@@ -33,14 +33,14 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   selectedItem: {
-    backgroundColor: "#FEE2E2", // Light red for selected items
+    backgroundColor: "#FEE2E2", 
   },
   itemText: {
     fontSize: 14,
     color: "#374151",
   },
   selectedText: {
-    color: "#B91C1C", // Dark red for selected text
+    color: "#B91C1C", 
   },
 });
 

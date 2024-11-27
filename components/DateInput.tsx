@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Platform, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, Platform, Image, TouchableOpacity } from "react-native";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 
 interface DateInputProps {
@@ -12,9 +12,9 @@ const DateInput: React.FC<DateInputProps> = ({ placeholder = "Select Date", valu
   const [showPicker, setShowPicker] = useState(false);
 
   const handleChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    setShowPicker(false); // Close picker
+    setShowPicker(false); 
     if (selectedDate) {
-      onChange(selectedDate); // Update selected date
+      onChange(selectedDate); 
     }
   };
 
@@ -22,7 +22,10 @@ const DateInput: React.FC<DateInputProps> = ({ placeholder = "Select Date", valu
     <View style={styles.container}>
       <TouchableOpacity style={styles.input} onPress={() => setShowPicker(true)}>
         <Text style={styles.inputText}>{value ? value.toDateString() : placeholder}</Text>
-        <Text style={styles.calendarIcon}>📅</Text>
+        <Image
+        source={require("../assets/calendar.png")} 
+        style={styles.calendarIcon}
+      />
       </TouchableOpacity>
       {showPicker && (
         <DateTimePicker
@@ -56,8 +59,9 @@ const styles = StyleSheet.create({
     color: "#374151",
   },
   calendarIcon: {
-    fontSize: 20,
-    color: "#374151",
+    width: 20, 
+    height: 20, 
+    marginLeft: 8,
   },
 });
 

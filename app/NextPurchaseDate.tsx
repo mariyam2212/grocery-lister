@@ -8,6 +8,7 @@ import { database } from "../firebase/firebase";
 import { ref, set, push, query, orderByKey, limitToLast, update, get } from "firebase/database";
 import { GeneratedListHelper } from "../firebase/GLHelper"
 import { fetchGroceryItemsForUser } from "../firebase/GroceryItemsFetch";
+import globalStyles from "@/constants/style";
 
 type GroceryItem = {
     frequency: number;
@@ -51,10 +52,8 @@ const NextPurchaseDateScreen: React.FC = () => {
           status: "N", 
         }));
         setGeneratedList(generatedList);
-        console.log("line 79: ", generatedList.length);
         try {
           const newListReference = await GeneratedListHelper(userId, "create");
-          console.log("generated list items: ", generatedList.length);
           const listData = {
             user_id: userId,
             status: "active",
@@ -117,9 +116,9 @@ const NextPurchaseDateScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>When is your next purchase planned?</Text>
+      <Text style={globalStyles.title}>When is your next purchase planned?</Text>
       <DateInput value={localNextDate} onChange={setLocalNextDate} />
-      <Button title="Generate new list" onPress={handleGenerateNewList} />
+      <Button title="Generate new list" style={styles.button} onPress={handleGenerateNewList} />
     </View>
   );
 };
@@ -129,16 +128,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 16,
+    padding: 10,
+    paddingTop: 70,
+    paddingBottom: 90,
     backgroundColor: "#FFFFFF",
   },
   title: {
-    fontSize: 20,
-    fontWeight: "500",
-    textAlign: "center",
-    color: "#374151",
-    marginBottom: 24,
+    fontSize: 24,
+    fontWeight: 300,
+    letterSpacing: 0.4,
+    color: "#1B1D1C",
+    fontFamily: "Quattrocento",
+    marginBottom: 40,
+    textAlign: "center"
   },
+  button: {
+    width: "90%"
+  }
 });
 
 export default NextPurchaseDateScreen;

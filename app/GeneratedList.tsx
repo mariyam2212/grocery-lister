@@ -10,6 +10,7 @@ import { useLocalSearchParams } from "expo-router";
 import { GeneratedListHelper } from "../firebase/GLHelper";
 import fetchLatestActiveGeneratedList from "../firebase/GeneratedListFetch";
 import { updateGroceryItems } from "../firebase/GroceryItemsUpdate"
+import globalStyles from "@/constants/style";
 
 type ListData = {
   item: string;
@@ -138,7 +139,6 @@ export default function GeneratedListScreen() {
             )
             .map((newItem: string) => ({ item: newItem, status: "Y" })), 
         ];
-        console.log("updatedItems: ", updatedItems);
         await set(ref(database, `GeneratedLists/${userId}/${latestKey}/items`), updatedItems);
   
         setGeneratedList(updatedItems);
@@ -159,15 +159,15 @@ export default function GeneratedListScreen() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Loading...</Text>
+      <View style={globalStyles.container}>
+        <Text style={globalStyles.title}>Loading...</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
+    <View style={globalStyles.container}>
+      <Text style={globalStyles.title}>
         {!showCheckBox ? "Review your list!" : "Check off items as you shop!"}
       </Text>
       <FlatList
@@ -200,18 +200,6 @@ export default function GeneratedListScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#FFFFFF",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "500",
-    textAlign: "center",
-    color: "#374151",
-    marginBottom: 16,
-  },
   listContainer: {
     paddingBottom: 16,
   },

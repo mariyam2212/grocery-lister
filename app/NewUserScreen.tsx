@@ -4,10 +4,11 @@ import Button from "../components/Button";
 import DateInput from "../components/DateInput";
 import { useRouter } from "expo-router";
 import { useUser } from "../context/UserContext";
+import globalStyles from "@/constants/style";
 
 const NewUserScreen: React.FC = () => {
   const router = useRouter();
-  const { userId, setPastPurchaseDate } = useUser(); // Access setSelectedDate from context
+  const { userId, setPastPurchaseDate } = useUser(); 
   const [localDate, setLocalDate] = useState<Date | null>(null);
 
   const handleNextPress = () => {
@@ -20,30 +21,18 @@ const NewUserScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{userId ? `Your User ID: ${userId}` : "No User ID Found"}</Text>
-      <Text style={styles.title}>When did you last go shopping?</Text>
+    <View style={globalStyles.container}>
+      <Text style={globalStyles.title}>When did you last go shopping?</Text>
       <DateInput value={localDate} onChange={setLocalDate} />
-      <Button title="Next" onPress={handleNextPress} />
+      <Button title="Next" style={styles.button} onPress={handleNextPress} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 16,
-    backgroundColor: "#FFFFFF",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "500",
-    textAlign: "center",
-    color: "#374151",
-    marginBottom: 24,
-  },
+  button: {
+    width: "90%"
+  }
 });
 
 export default NewUserScreen;

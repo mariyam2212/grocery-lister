@@ -6,6 +6,7 @@ import Button from "../components/Button";
 import { auth } from "../firebase/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useUser } from "../context/UserContext";
+import globalStyles from "@/constants/style";
 
 export default function LoginScreen() {
   const router = useRouter(); // For navigation
@@ -41,7 +42,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={globalStyles.container}>
       <Text style={styles.title}>Login</Text>
       <InputField
         placeholder="Email"
@@ -67,28 +68,25 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 16,
-    backgroundColor: "#FFFFFF",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#16A34A", // Green text color
-    marginBottom: 32,
-  },
   forgotPassword: {
     color: "#16A34A",
     fontSize: 14,
-    marginVertical: 8,
-    alignSelf: "flex-end",
+    marginTop: 10,
+    marginBottom: 10,
+    marginLeft: 230,
   },
   createAccount: {
     color: "#374151",
     fontSize: 14,
-    marginTop: 16,
+    margin: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 700,
+    letterSpacing: 0.4,
+    fontFamily: "Quattrocento",
+    marginBottom: 40,
+    textAlign: "center",
+    color: "#16A34A"
   },
 });

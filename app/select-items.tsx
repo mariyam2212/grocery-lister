@@ -8,6 +8,7 @@ import { database } from "../firebase/firebase";
 import { ref, onValue, set } from "firebase/database"; 
 import { useUser } from "../context/UserContext";
 import { useLocalSearchParams } from "expo-router";
+import globalStyles from "@/constants/style";
 
 const SelectItemsScreen: React.FC = () => {
   const router = useRouter();
@@ -63,9 +64,7 @@ const SelectItemsScreen: React.FC = () => {
           params: { newList: "Y" },
         });
       } else {
-        console.log("selectedItems: ", selectedItems);
         const newItemsAddedToGeneratedList = selectedItems;
-        console.log("newItemsAddedToGeneratedList: ", newItemsAddedToGeneratedList);
         router.push({
           pathname: "./GeneratedList",
           params: { newItemsAddedToGeneratedList },
@@ -97,7 +96,6 @@ const SelectItemsScreen: React.FC = () => {
   
       // Update the `GroceryItems` table
       await set(groceryItemsRef, updates);
-      console.log("Grocery items updated successfully.");
     } catch (error) {
       console.error("Error updating GroceryItems:", error);
       throw error;
@@ -105,8 +103,10 @@ const SelectItemsScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Select some items from your last purchase.</Text>
+    <View style={globalStyles.container}>
+      <Text style={globalStyles.title}>
+        {isEdit ? "Add more items" : "Select some items from your last purchase"}
+      </Text>
       <SearchBar onAddItem={handleAddItem} />
       <FlatList
         data={itemsList}
@@ -127,19 +127,6 @@ const SelectItemsScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    margin: 20,
-    padding: 16,
-    backgroundColor: "#FFFFFF",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "500",
-    textAlign: "center",
-    color: "#374151",
-    marginBottom: 16,
-  },
   listContainer: {
     justifyContent: "center",
     alignItems: "center",

@@ -22,12 +22,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#16A34A',
     borderRadius: 8,
     alignItems: 'center',
-    marginVertical: 8,
+    marginVertical: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
   },
   text: {
     color: '#FFFFFF',
+    textAlign: 'center',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontStyle: 'normal',
+    fontWeight: '600',
+    lineHeight: 20,
   },
 });
 

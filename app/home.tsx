@@ -6,6 +6,7 @@ import { database } from "../firebase/firebase";
 import { ref, onValue, get } from "firebase/database";
 import { useUser } from "../context/UserContext";
 import { hasActiveList } from "../firebase/GLHasActiveList"
+import globalStyles from "@/constants/style";
 
 type ListItem = {
   item: string;
@@ -71,30 +72,13 @@ export default function GroceryListScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Ready for a new grocery list?</Text>
+    <View style={globalStyles.container}>
+      <Text style={globalStyles.title}>{generateNewListFlag && newList === "Y" ? "Ready for a new grocery list?" : "View your list whenever you are ready to shop!"}</Text>
       {(generateNewListFlag && newList === "Y")? (
-        <Button title="Generate List" onPress={handleGenerateListPress} />
+        <Button title="Generate New List" onPress={handleGenerateListPress} />
       ) : (
         <Button title="View List" onPress={handleViewListPress} />
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 16,
-    backgroundColor: "#FFFFFF",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "500",
-    textAlign: "center",
-    color: "#374151",
-    marginBottom: 24,
-  },
-});

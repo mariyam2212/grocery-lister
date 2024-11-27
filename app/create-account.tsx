@@ -6,6 +6,7 @@ import { useRouter } from "expo-router";
 import InputField from "../components/InputField";
 import Button from "../components/Button";
 import { useUser } from "../context/UserContext";
+import globalStyles from "@/constants/style";
 
 export default function CreateAccountScreen() {
   const router = useRouter(); // For navigation
@@ -22,7 +23,6 @@ export default function CreateAccountScreen() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const userId = userCredential.user.uid; // Get the user ID
       setUserId(userId);
-      Alert.alert("Account Created", "You can now log in!");
       router.push("./NewUserScreen"); // Navigate back to the Login page after account creation
     } catch (error: any) {
       Alert.alert("Sign Up Failed", error.message);
@@ -44,7 +44,7 @@ export default function CreateAccountScreen() {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Sign up" onPress={handleSignUpPress} />
+      <Button title="Sign up" style={styles.customButton} onPress={handleSignUpPress} />
     </View>
   );
 }
@@ -54,13 +54,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 16,
+    padding: 30,
+    paddingTop: 30,
+    paddingBottom: 90,
     backgroundColor: "#FFFFFF",
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#16A34A", // Green text color
-    marginBottom: 32,
+    fontWeight: 700,
+    letterSpacing: 0.4,
+    fontFamily: "Quattrocento",
+    marginBottom: 40,
+    textAlign: "center",
+    color: "#16A34A"
   },
+  customButton: {
+    marginTop: 60
+  }
 });
