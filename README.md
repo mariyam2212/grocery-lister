@@ -8,7 +8,8 @@ This project follows the **HCI design process** to create and test a functional 
 
 The project was developed using the **five key stages** of the design thinking approach:
 
-!\[HCI Process]\(https://images.app.goo.gl/XNM5R5Gwvd2guXjEA)
+![HCI Process](https://raw.githubusercontent.com/mariyam2212/grocery-lister/master/images/design-process.png)
+
 
 1. **Empathize**
 
@@ -39,7 +40,8 @@ The project was developed using the **five key stages** of the design thinking a
 
 ## 🎨 Prototype
 
-[**View the Interactive Prototype in Figma**]([https://www.figma.com/design/aAL2ZGTrFlcSS4RTyi8czE/medFi?node-id=0-1](https://www.figma.com/proto/aAL2ZGTrFlcSS4RTyi8czE/medFi?node-id=0-1&t=gjecIDGj7IXpzEfN-1))
+[**View the Interactive Prototype in Figma**](https://www.figma.com/proto/aAL2ZGTrFlcSS4RTyi8czE/medFi?node-id=0-1&t=gjecIDGj7IXpzEfN-1)
+
 
 ---
 
