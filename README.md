@@ -15,21 +15,25 @@ The project was developed using the **five key stages** of the design thinking a
 
    * Conducted user research and gathered insights into user needs, goals, and pain points.
    * Used interviews and surveys to understand the target audience.
+   * https://github.com/mariyam2212/grocery-lister/blob/master/Design%20Process/Observe%2C%20Interview%2C%20%26%20Empathize.pdf
 
 2. **Define**
 
    * Created a problem statement based on findings.
    * Identified core challenges and opportunities.
+   * https://github.com/mariyam2212/grocery-lister/blob/master/Design%20Process/POVs%20%26%20HMWs.pdf
 
 3. **Ideate**
 
    * Brainstormed multiple solutions and design approaches.
    * Sketched possible user interface layouts and interaction flows.
+   * https://github.com/mariyam2212/grocery-lister/blob/master/Design%20Process/Concepts%20%26%20Storyboards.pdf
 
 4. **Prototype**
 
    * Developed an interactive prototype using Figma.
    * Focused on intuitive navigation and aesthetic consistency.
+   * https://github.com/mariyam2212/grocery-lister/blob/master/Design%20Process/Experience%20%2B%20Lofi%20Prototype.pdf
 
 5. **Test**
 
